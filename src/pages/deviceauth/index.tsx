@@ -9,7 +9,7 @@ import {
   Input,
   Menu,
   Row,
-  Select,
+  // Select,
   message,
   Popconfirm
 } from 'antd';
@@ -20,16 +20,16 @@ import { FormComponentProps } from 'antd/es/form';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import { SorterResult } from 'antd/es/table';
 import { connect } from 'dva';
-import moment from 'moment';
+// import moment from 'moment';
 import { StateType } from './model';
 import CreateForm from './components/CreateForm';
 import StandardTable, { StandardTableColumnProps } from './components/StandardTable';
+import DetailDrawer from './components/DetailDrawer';
 import { TableListItem, TableListPagination, TableListParams } from './data.d';
 
 import styles from './style.less';
 
 const FormItem = Form.Item;
-const { Option } = Select;
 const getValue = (obj: { [x: string]: string[] }) =>
   Object.keys(obj)
     .map(key => obj[key])
@@ -38,12 +38,13 @@ const getValue = (obj: { [x: string]: string[] }) =>
 interface TableListProps extends FormComponentProps {
   dispatch: Dispatch<any>;
   loading: boolean;
-  businessFloor: StateType;
+  deviceauth: StateType;
 }
 
 interface TableListState {
   modalVisible: boolean;
   updateModalVisible: boolean;
+  drawerVisible: boolean;
   expandForm: boolean;
   selectedRows: TableListItem[];
   formValues: { [key: string]: string };
@@ -54,17 +55,17 @@ interface TableListState {
 /* eslint react/no-multi-comp:0 */
 @connect(
   ({
-    businessFloor,
+    deviceauth,
     loading,
   }: {
-    businessFloor: StateType;
+    deviceauth: StateType;
     loading: {
       models: {
         [key: string]: boolean;
       };
     };
   }) => ({
-    businessFloor,
+    deviceauth,
     loading: loading.models.rule,
   }),
 )
@@ -72,6 +73,7 @@ class TableList extends Component<TableListProps, TableListState> {
   state: TableListState = {
     modalVisible: false,
     updateModalVisible: false,
+    drawerVisible: false,
     expandForm: false,
     selectedRows: [],
     formValues: {},
@@ -81,11 +83,16 @@ class TableList extends Component<TableListProps, TableListState> {
 
   columns: StandardTableColumnProps[] = [
     {
-      title: '名字',
-      dataIndex: 'name',
+      title: '设备',
+      dataIndex: 'device',
+      render: (text, record) => {
+        return (
+          <a href="javascript:void(0);" onClick={() => this.handleDrawerVisible(true, record)}>{text}</a>
+        )
+      }
     },
     {
-      title: '备注',
+      title: '楼层',
       dataIndex: 'remark',
     },
     {
@@ -120,7 +127,7 @@ class TableList extends Component<TableListProps, TableListState> {
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'businessFloor/fetch',
+      type: 'deviceauth/fetch',
     });
   }
 
@@ -151,7 +158,7 @@ class TableList extends Component<TableListProps, TableListState> {
       pageNo: pagination.current
     })
     dispatch({
-      type: 'businessFloor/fetch',
+      type: 'deviceauth/fetch',
       payload: params,
     });
   };
@@ -163,7 +170,7 @@ class TableList extends Component<TableListProps, TableListState> {
       formValues: {},
     });
     dispatch({
-      type: 'businessFloor/fetch',
+      type: 'deviceauth/fetch',
       payload: {},
     });
   };
@@ -183,12 +190,12 @@ class TableList extends Component<TableListProps, TableListState> {
     switch (e.key) {
       case 'remove':
         dispatch({
-          type: 'businessFloor/remove',
+          type: 'deviceauth/remove',
           payload: e.record ? e.record.id : selectedRows.map(row => row.id),
           callback: () => {
             message.success('删除成功');
             dispatch({
-              type: 'businessFloor/fetch',
+              type: 'deviceauth/fetch',
               payload: {
                 pageNo: this.state.pageNo
               }
@@ -227,7 +234,7 @@ class TableList extends Component<TableListProps, TableListState> {
       });
 
       dispatch({
-        type: 'businessFloor/fetch',
+        type: 'deviceauth/fetch',
         payload: fieldsValue,
       });
     });
@@ -246,16 +253,22 @@ class TableList extends Component<TableListProps, TableListState> {
     });
   };
 
+  handleDrawerVisible = (flag?: boolean, record?: Partial<TableListItem>) => {
+    this.setState({
+      drawerVisible: !!flag,
+      stepFormValues: record || {}
+    });
+  };
+
   handleAdd = (fields: TableListItem) => {
-    console.log(fields)
     const { dispatch } = this.props;
     dispatch({
-      type: 'businessFloor/add',
+      type: 'deviceauth/add',
       payload: fields,
       callback: () => {
         message.success('添加成功');
         dispatch({
-          type: 'businessFloor/fetch',
+          type: 'deviceauth/fetch',
           payload: {
             pageNo: this.state.pageNo
           }
@@ -269,12 +282,12 @@ class TableList extends Component<TableListProps, TableListState> {
   handleUpdate = (fields: TableListItem) => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'businessFloor/update',
+      type: 'deviceauth/update',
       payload: fields,
       callback: () => {
         message.success('修改成功');
         dispatch({
-          type: 'businessFloor/fetch',
+          type: 'deviceauth/fetch',
           payload: {
             pageNo: this.state.pageNo
           },
@@ -312,7 +325,7 @@ class TableList extends Component<TableListProps, TableListState> {
 
   render() {
     const {
-      businessFloor: { data },
+      deviceauth: { data },
       loading,
     } = this.props;
 
@@ -364,6 +377,11 @@ class TableList extends Component<TableListProps, TableListState> {
           </div>
         </Card>
         <CreateForm {...parentMethods} {...updateMethods} modalVisible={modalVisible} values={stepFormValues} />
+        {stepFormValues && Object.keys(stepFormValues).length ? (<DetailDrawer
+          values={stepFormValues}
+          drawerVisible={this.state.drawerVisible}
+          handleDrawerVisible={this.handleDrawerVisible}
+        ></DetailDrawer>) : null}
       </PageHeaderWrapper>
     );
   }

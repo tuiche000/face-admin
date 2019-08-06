@@ -111,15 +111,25 @@ export default {
           component: './Welcome',
         },
         {
+          name: 'deviceauth',
+          path: '/deviceauth',
+          icon: 'smile',
+          component: './deviceauth',
+        },
+        {
           name: 'business',
           path: '/business',
-          // component: './list/table/list',
           icon: 'smile',
           routes: [
             {
               name: 'business-floor',
               path: '/business/floor',
               component: './business/floor',
+            },
+            {
+              name: 'business-device',
+              path: '/business/device',
+              component: './business/device',
             }
           ]
         },

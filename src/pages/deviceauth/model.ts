@@ -1,6 +1,6 @@
 import { AnyAction, Reducer } from 'redux';
 import { EffectsCommandMap } from 'dva';
-import { detail, add, query, remove, update } from './service';
+import { add, query, remove, update } from './service';
 
 import { TableListData } from './data.d';
 
@@ -28,7 +28,7 @@ export interface ModelType {
 }
 
 const Model: ModelType = {
-  namespace: 'businessFloor',
+  namespace: 'deviceauth',
 
   state: {
     data: {
