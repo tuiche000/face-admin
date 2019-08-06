@@ -47,37 +47,36 @@ const Model: ModelType = {
       });
     },
     *fetch({ payload }, { call, put }) {
-      console.log('fetch')
       const response = yield call(query, payload);
-      console.log(response)
+      let data:Partial<TableListData> = {}
+      data.list = response.data && response.data.result
+      data.pagination = {
+        total: response.data && response.data.totalResults,
+        pageSize: response.data && response.data.pageSize,
+        current: response.data && response.data.pageNo
+      }
       yield put({
         type: 'save',
-        payload: response,
+        payload: data,
       });
     },
-    *add({ payload, callback }, { call, put }) {
+    *add({ payload, callback }, { call }) {
       const response = yield call(add, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-      if (callback) callback();
+      if (response.code == '0') {
+        if (callback) callback();
+      }
     },
-    *remove({ payload, callback }, { call, put }) {
+    *remove({ payload, callback }, { call }) {
       const response = yield call(remove, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-      if (callback) callback();
+      if (response.code == '0') {
+        if (callback) callback();
+      }
     },
     *update({ payload, callback }, { call, put }) {
       const response = yield call(update, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-      if (callback) callback();
+      if (response.code == '0') {
+        if (callback) callback();
+      }
     },
   },
 

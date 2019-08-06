@@ -1,19 +1,17 @@
 import {
-  Badge,
   Button,
   Card,
   Col,
-  DatePicker,
   Divider,
   Dropdown,
   Form,
   Icon,
   Input,
-  InputNumber,
   Menu,
   Row,
   Select,
   message,
+  Popconfirm
 } from 'antd';
 import React, { Component, Fragment } from 'react';
 
@@ -26,7 +24,7 @@ import moment from 'moment';
 import { StateType } from './model';
 import CreateForm from './components/CreateForm';
 import StandardTable, { StandardTableColumnProps } from './components/StandardTable';
-import UpdateForm, { FormValsType } from './components/UpdateForm';
+import { FormValsType } from './components/UpdateForm';
 import { TableListItem, TableListPagination, TableListParams } from './data.d';
 
 import styles from './style.less';
@@ -37,10 +35,6 @@ const getValue = (obj: { [x: string]: string[] }) =>
   Object.keys(obj)
     .map(key => obj[key])
     .join(',');
-
-type IStatusMapType = 'default' | 'processing' | 'success' | 'error';
-const statusMap = ['default', 'processing', 'success', 'error'];
-const status = ['关闭', '运行中', '已上线', '异常'];
 
 interface TableListProps extends FormComponentProps {
   dispatch: Dispatch<any>;
@@ -55,6 +49,7 @@ interface TableListState {
   selectedRows: TableListItem[];
   formValues: { [key: string]: string };
   stepFormValues: Partial<TableListItem>;
+  pageNo: number | undefined;
 }
 
 /* eslint react/no-multi-comp:0 */
@@ -82,64 +77,42 @@ class TableList extends Component<TableListProps, TableListState> {
     selectedRows: [],
     formValues: {},
     stepFormValues: {},
+    pageNo: 1,
   };
 
   columns: StandardTableColumnProps[] = [
     {
-      title: '规则名称',
+      title: '名字',
       dataIndex: 'name',
     },
     {
-      title: '描述',
-      dataIndex: 'desc',
+      title: '备注',
+      dataIndex: 'remark',
     },
     {
-      title: '服务调用次数',
-      dataIndex: 'callNo',
-      sorter: true,
-      align: 'right',
-      render: (val: string) => `${val} 万`,
-      // mark to display a total number
-      needTotal: true,
-    },
-    {
-      title: '状态',
-      dataIndex: 'status',
-      filters: [
-        {
-          text: status[0],
-          value: '0',
-        },
-        {
-          text: status[1],
-          value: '1',
-        },
-        {
-          text: status[2],
-          value: '2',
-        },
-        {
-          text: status[3],
-          value: '3',
-        },
-      ],
-      render(val: IStatusMapType) {
-        return <Badge status={statusMap[val]} text={status[val]} />;
-      },
-    },
-    {
-      title: '上次调度时间',
-      dataIndex: 'updatedAt',
-      sorter: true,
-      render: (val: string) => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
+      title: '显示顺序',
+      dataIndex: 'displayOrder',
     },
     {
       title: '操作',
       render: (text, record) => (
         <Fragment>
-          <a onClick={() => this.handleUpdateModalVisible(true, record)}>配置</a>
+          <a onClick={() => this.handleUpdateModalVisible(true, record)}>修改</a>
           <Divider type="vertical" />
-          <a href="">订阅警报</a>
+          <Popconfirm
+            title="确定吗?"
+            onConfirm={() => {
+              this.handleMenuClick({
+                key: 'remove',
+                record
+              })
+            }}
+            // onCancel={cancel}
+            okText="Yes"
+            cancelText="No"
+          >
+            <a href="javascript:void(0);">删除</a>
+          </Popconfirm>
         </Fragment>
       ),
     },
@@ -167,7 +140,7 @@ class TableList extends Component<TableListProps, TableListState> {
     }, {});
 
     const params: Partial<TableListParams> = {
-      currentPage: pagination.current,
+      pageNo: pagination.current,
       pageSize: pagination.pageSize,
       ...formValues,
       ...filters,
@@ -175,7 +148,9 @@ class TableList extends Component<TableListProps, TableListState> {
     if (sorter.field) {
       params.sorter = `${sorter.field}_${sorter.order}`;
     }
-
+    this.setState({
+      pageNo: pagination.current
+    })
     dispatch({
       type: 'businessFloor/fetch',
       payload: params,
@@ -201,7 +176,7 @@ class TableList extends Component<TableListProps, TableListState> {
     });
   };
 
-  handleMenuClick = (e: { key: string }) => {
+  handleMenuClick = (e: { key: string, record?: TableListItem }) => {
     const { dispatch } = this.props;
     const { selectedRows } = this.state;
 
@@ -210,10 +185,15 @@ class TableList extends Component<TableListProps, TableListState> {
       case 'remove':
         dispatch({
           type: 'businessFloor/remove',
-          payload: {
-            key: selectedRows.map(row => row.key),
-          },
+          payload: e.record ? e.record.id : selectedRows.map(row => row.id),
           callback: () => {
+            message.success('删除成功');
+            dispatch({
+              type: 'businessFloor/fetch',
+              payload: {
+                pageNo: this.state.pageNo
+              }
+            });
             this.setState({
               selectedRows: [],
             });
@@ -238,19 +218,18 @@ class TableList extends Component<TableListProps, TableListState> {
 
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-
-      const values = {
-        ...fieldsValue,
-        updatedAt: fieldsValue.updatedAt && fieldsValue.updatedAt.valueOf(),
-      };
-
+      // const values = {
+      //   ...fieldsValue,
+      //   updatedAt: fieldsValue.updatedAt && fieldsValue.updatedAt.valueOf(),
+      // };
       this.setState({
-        formValues: values,
+        pageNo: 1,
+        formValues: fieldsValue,
       });
 
       dispatch({
         type: 'businessFloor/fetch',
-        payload: values,
+        payload: fieldsValue,
       });
     });
   };
@@ -263,21 +242,28 @@ class TableList extends Component<TableListProps, TableListState> {
 
   handleUpdateModalVisible = (flag?: boolean, record?: FormValsType) => {
     this.setState({
-      updateModalVisible: !!flag,
+      modalVisible: !!flag,
       stepFormValues: record || {},
     });
   };
 
-  handleAdd = (fields: { desc: any }) => {
+  handleAdd = (fields: TableListItem) => {
+    console.log(fields)
     const { dispatch } = this.props;
     dispatch({
       type: 'businessFloor/add',
-      payload: {
-        desc: fields.desc,
+      payload: fields,
+      callback: () => {
+        message.success('添加成功');
+        dispatch({
+          type: 'businessFloor/fetch',
+          payload: {
+            pageNo: this.state.pageNo
+          }
+        });
       },
     });
 
-    message.success('添加成功');
     this.handleModalVisible();
   };
 
@@ -285,14 +271,17 @@ class TableList extends Component<TableListProps, TableListState> {
     const { dispatch } = this.props;
     dispatch({
       type: 'businessFloor/update',
-      payload: {
-        name: fields.name,
-        desc: fields.desc,
-        key: fields.key,
+      payload: fields,
+      callback: () => {
+        message.success('修改成功');
+        dispatch({
+          type: 'businessFloor/fetch',
+          payload: {
+            pageNo: this.state.pageNo
+          },
+        });
       },
     });
-
-    message.success('配置成功');
     this.handleUpdateModalVisible();
   };
 
@@ -303,18 +292,8 @@ class TableList extends Component<TableListProps, TableListState> {
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
-            <FormItem label="规则名称">
-              {getFieldDecorator('name')(<Input placeholder="请输入" />)}
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-            <FormItem label="使用状态">
-              {getFieldDecorator('status')(
-                <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="0">关闭</Option>
-                  <Option value="1">运行中</Option>
-                </Select>,
-              )}
+            <FormItem label="关键词">
+              {getFieldDecorator('keyword')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
@@ -325,93 +304,11 @@ class TableList extends Component<TableListProps, TableListState> {
               <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
                 重置
               </Button>
-              <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
-                展开 <Icon type="down" />
-              </a>
             </span>
           </Col>
         </Row>
       </Form>
     );
-  }
-
-  renderAdvancedForm() {
-    const {
-      form: { getFieldDecorator },
-    } = this.props;
-    return (
-      <Form onSubmit={this.handleSearch} layout="inline">
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={8} sm={24}>
-            <FormItem label="规则名称">
-              {getFieldDecorator('name')(<Input placeholder="请输入" />)}
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-            <FormItem label="使用状态">
-              {getFieldDecorator('status')(
-                <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="0">关闭</Option>
-                  <Option value="1">运行中</Option>
-                </Select>,
-              )}
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-            <FormItem label="调用次数">
-              {getFieldDecorator('number')(<InputNumber style={{ width: '100%' }} />)}
-            </FormItem>
-          </Col>
-        </Row>
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={8} sm={24}>
-            <FormItem label="更新日期">
-              {getFieldDecorator('date')(
-                <DatePicker style={{ width: '100%' }} placeholder="请输入更新日期" />,
-              )}
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-            <FormItem label="使用状态">
-              {getFieldDecorator('status3')(
-                <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="0">关闭</Option>
-                  <Option value="1">运行中</Option>
-                </Select>,
-              )}
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-            <FormItem label="使用状态">
-              {getFieldDecorator('status4')(
-                <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="0">关闭</Option>
-                  <Option value="1">运行中</Option>
-                </Select>,
-              )}
-            </FormItem>
-          </Col>
-        </Row>
-        <div style={{ overflow: 'hidden' }}>
-          <div style={{ float: 'right', marginBottom: 24 }}>
-            <Button type="primary" htmlType="submit">
-              查询
-            </Button>
-            <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
-              重置
-            </Button>
-            <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
-              收起 <Icon type="up" />
-            </a>
-          </div>
-        </div>
-      </Form>
-    );
-  }
-
-  renderForm() {
-    const { expandForm } = this.state;
-    return expandForm ? this.renderAdvancedForm() : this.renderSimpleForm();
   }
 
   render() {
@@ -440,7 +337,7 @@ class TableList extends Component<TableListProps, TableListState> {
       <PageHeaderWrapper>
         <Card bordered={false}>
           <div className={styles.tableList}>
-            <div className={styles.tableListForm}>{this.renderForm()}</div>
+            <div className={styles.tableListForm}>{this.renderSimpleForm()}</div>
             <div className={styles.tableListOperator}>
               <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>
                 新建
@@ -457,6 +354,7 @@ class TableList extends Component<TableListProps, TableListState> {
               )}
             </div>
             <StandardTable
+              rowKey="id"
               selectedRows={selectedRows}
               loading={loading}
               data={data}
@@ -466,14 +364,7 @@ class TableList extends Component<TableListProps, TableListState> {
             />
           </div>
         </Card>
-        <CreateForm {...parentMethods} modalVisible={modalVisible} />
-        {stepFormValues && Object.keys(stepFormValues).length ? (
-          <UpdateForm
-            {...updateMethods}
-            updateModalVisible={updateModalVisible}
-            values={stepFormValues}
-          />
-        ) : null}
+        <CreateForm {...parentMethods} {...updateMethods} modalVisible={modalVisible} values={stepFormValues} />
       </PageHeaderWrapper>
     );
   }

@@ -1,18 +1,9 @@
 // 表单列表
 export interface TableListItem {
-  key: number;
-  disabled?: boolean;
-  href: string;
-  avatar: string;
-  name: string;
-  title: string;
-  owner: string;
-  desc: string;
-  callNo: number;
-  status: number;
-  updatedAt: Date;
-  createdAt: Date;
-  progress: number;
+  displayOrder: number
+  id?: string
+  name: string
+  remark: string
 }
 
 // 表单分页
@@ -22,7 +13,7 @@ export interface TableListPagination {
   current: number;
 }
 
-// 表单数据
+// 页面数据
 export interface TableListData {
   list: TableListItem[];
   pagination: Partial<TableListPagination>;
@@ -34,5 +25,5 @@ export interface TableListParams {
   status: string;
   name: string;
   pageSize: number;
-  currentPage: number;
+  pageNo: number;
 }

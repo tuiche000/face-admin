@@ -1,4 +1,7 @@
 export default {
+  // business
+  'menu.business': '业务配置',
+  'menu.business.business-floor': '楼层管理',
   'menu.welcome': '欢迎',
   'menu.more-blocks': '更多区块',
   'menu.home': '首页',

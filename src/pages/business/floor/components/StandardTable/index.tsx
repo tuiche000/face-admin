@@ -149,7 +149,7 @@ class StandardTable extends Component<StandardTableProps<TableListItem>, Standar
           />
         </div>
         <Table
-          rowKey={rowKey || 'key'}
+          rowKey={rowKey || 'id'}
           rowSelection={rowSelection}
           dataSource={list}
           pagination={paginationProps}
