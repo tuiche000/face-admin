@@ -2,7 +2,7 @@ import { Drawer, Divider, Col, Row } from 'antd';
 
 import React, { useState, useEffect } from 'react';
 import { TableListItem } from '../data.d';
-import { detail }from '../service'
+import { detail } from '../service'
 
 const pStyle = {
   fontSize: 16,
@@ -36,14 +36,17 @@ const DescriptionItem = ({ title, content }: any) => (
 interface DetailDrawerProps {
   drawerVisible: boolean;
   handleDrawerVisible: (flag?: boolean, record?: Partial<TableListItem>) => void
-  values: TableListItem;
+  values: Partial<TableListItem>;
 }
 const DetailDrawer: React.FC<DetailDrawerProps> = props => {
   const { drawerVisible, handleDrawerVisible, values } = props;
 
   const [detailInfo, setDetailInfo] = useState();
   useEffect(() => {
-    detail(values.id).then(res=>{
+    detail(values.id).then((res: {
+      code: string;
+      data: TableListItem
+    }) => {
       if (res.code == "0") {
         setDetailInfo(res.data)
       }
@@ -52,7 +55,7 @@ const DetailDrawer: React.FC<DetailDrawerProps> = props => {
 
   return (
     <Drawer
-      width={640}
+      width={'50%'}
       placement="right"
       closable={false}
       onClose={() => handleDrawerVisible(false, values)}

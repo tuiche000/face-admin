@@ -21,9 +21,9 @@ export interface TableListData {
 
 // 表单组件参数
 export interface TableListParams {
-  sorter: string;
-  status: string;
-  name: string;
+  sorter?: string;
+  status?: string;
+  name?: string;
   pageSize: number;
   pageNo: number;
 }

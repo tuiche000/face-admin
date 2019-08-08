@@ -2,6 +2,7 @@ import request from '@/utils/request';
 import { TableListParams } from './data.d';
 
 export async function detail(deviceId: string) {
+  console.log('执行了')
   return request(`/api/oss/device/${deviceId}`, {
     method: 'GET'
   });

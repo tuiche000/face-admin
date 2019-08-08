@@ -50,6 +50,7 @@ interface TableListState {
   formValues: { [key: string]: string };
   stepFormValues: Partial<TableListItem>;
   pageNo: number | undefined;
+  type: string;
 }
 
 /* eslint react/no-multi-comp:0 */
@@ -79,6 +80,7 @@ class TableList extends Component<TableListProps, TableListState> {
     formValues: {},
     stepFormValues: {},
     pageNo: 1,
+    type: 'add',
   };
 
   columns: StandardTableColumnProps[] = [
@@ -93,7 +95,7 @@ class TableList extends Component<TableListProps, TableListState> {
     },
     {
       title: '楼层',
-      dataIndex: 'remark',
+      dataIndex: 'floorName',
     },
     {
       title: '显示顺序',
@@ -243,20 +245,23 @@ class TableList extends Component<TableListProps, TableListState> {
   handleModalVisible = (flag?: boolean) => {
     this.setState({
       modalVisible: !!flag,
+      type: 'add'
     });
   };
 
   handleUpdateModalVisible = (flag?: boolean, record?: TableListItem) => {
     this.setState({
-      modalVisible: !!flag,
+      updateModalVisible: !!flag,
       stepFormValues: record || {},
+      type: record ? 'update' : 'add'
     });
   };
 
   handleDrawerVisible = (flag?: boolean, record?: Partial<TableListItem>) => {
     this.setState({
       drawerVisible: !!flag,
-      stepFormValues: record || {}
+      stepFormValues: record || {},
+      type: record ? 'drawer' : 'add'
     });
   };
 
@@ -294,7 +299,7 @@ class TableList extends Component<TableListProps, TableListState> {
         });
       },
     });
-    this.handleUpdateModalVisible();
+    this.handleUpdateModalVisible(false);
   };
 
   renderSimpleForm() {
@@ -329,7 +334,7 @@ class TableList extends Component<TableListProps, TableListState> {
       loading,
     } = this.props;
 
-    const { selectedRows, modalVisible, stepFormValues } = this.state;
+    const { selectedRows, modalVisible, updateModalVisible, stepFormValues, type } = this.state;
     const menu = (
       <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
         <Menu.Item key="remove">删除</Menu.Item>
@@ -376,12 +381,23 @@ class TableList extends Component<TableListProps, TableListState> {
             />
           </div>
         </Card>
-        <CreateForm {...parentMethods} {...updateMethods} modalVisible={modalVisible} values={stepFormValues} />
-        {stepFormValues && Object.keys(stepFormValues).length ? (<DetailDrawer
-          values={stepFormValues}
-          drawerVisible={this.state.drawerVisible}
-          handleDrawerVisible={this.handleDrawerVisible}
-        ></DetailDrawer>) : null}
+        <CreateForm {...parentMethods} hasVal={false} modalVisible={modalVisible} />
+        {
+          type == 'update' ? (
+            <CreateForm
+              {...updateMethods}
+              hasVal={true}
+              modalVisible={updateModalVisible}
+              values={stepFormValues} />
+          ) : null
+        }
+        {type == 'drawer' ? (
+          <DetailDrawer
+            values={stepFormValues}
+            drawerVisible={this.state.drawerVisible}
+            handleDrawerVisible={this.handleDrawerVisible}
+          ></DetailDrawer>
+        ) : null}
       </PageHeaderWrapper>
     );
   }

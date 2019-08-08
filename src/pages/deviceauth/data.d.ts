@@ -8,6 +8,7 @@ export interface TableListItem {
   id: string
   name: string
   remark: string
+  host: string
 }
 
 // 表单分页
