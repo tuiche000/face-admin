@@ -3,8 +3,15 @@ export default {
   'menu.business': '业务配置',
   'menu.business.business-floor': '楼层管理',
   'menu.business.business-device': '设备管理',
+  'menu.business.business-banner': '广告横幅',
   // deviceauth
   'menu.deviceauth': '设备授权',
+  // user
+  'menu.userrole': '人员角色管理',
+  'menu.userrole.userrole-empolyee': '员工管理',
+  'menu.userrole.userrole-visitor': '访客管理',
+  'menu.userrole.userrole-department': '部门管理',
+  //
   'menu.welcome': '欢迎',
   'menu.more-blocks': '更多区块',
   'menu.home': '首页',

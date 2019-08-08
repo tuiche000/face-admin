@@ -38,7 +38,7 @@ const getValue = (obj: { [x: string]: string[] }) =>
 interface TableListProps extends FormComponentProps {
   dispatch: Dispatch<any>;
   loading: boolean;
-  deviceauth: StateType;
+  businessBanner: StateType;
 }
 
 interface TableListState {
@@ -56,17 +56,17 @@ interface TableListState {
 /* eslint react/no-multi-comp:0 */
 @connect(
   ({
-    deviceauth,
+    businessBanner,
     loading,
   }: {
-    deviceauth: StateType;
+    businessBanner: StateType;
     loading: {
       models: {
         [key: string]: boolean;
       };
     };
   }) => ({
-    deviceauth,
+    businessBanner,
     loading: loading.models.rule,
   }),
 )
@@ -85,24 +85,28 @@ class TableList extends Component<TableListProps, TableListState> {
 
   columns: StandardTableColumnProps[] = [
     {
-      title: '设备',
-      dataIndex: 'device'
+      title: '名字',
+      dataIndex: 'name',
+      render: (text, record) => {
+        return (
+          <a href="javascript:void(0);" onClick={() => this.handleDrawerVisible(true, record)}>{text}</a>
+        )
+      }
     },
     {
-      title: '员工',
-      dataIndex: 'employee',
+      title: '资源路径',
+      dataIndex: 'resource',
+      render: (text, record) => {
+        return <img width="210" height="140" src={text}></img>
+      }
     },
     {
-      title: '访客',
-      dataIndex: 'visitor',
+      title: '目标',
+      dataIndex: 'target',
     },
     {
-      title: '生效时间',
-      dataIndex: 'visitTime',
-    },
-    {
-      title: '过期时间',
-      dataIndex: 'expiredTime',
+      title: '显示顺序',
+      dataIndex: 'displayOrder',
     },
     {
       title: '操作',
@@ -132,7 +136,7 @@ class TableList extends Component<TableListProps, TableListState> {
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'deviceauth/fetch',
+      type: 'businessBanner/fetch',
     });
   }
 
@@ -163,7 +167,7 @@ class TableList extends Component<TableListProps, TableListState> {
       pageNo: pagination.current
     })
     dispatch({
-      type: 'deviceauth/fetch',
+      type: 'businessBanner/fetch',
       payload: params,
     });
   };
@@ -175,7 +179,7 @@ class TableList extends Component<TableListProps, TableListState> {
       formValues: {},
     });
     dispatch({
-      type: 'deviceauth/fetch',
+      type: 'businessBanner/fetch',
       payload: {},
     });
   };
@@ -195,12 +199,12 @@ class TableList extends Component<TableListProps, TableListState> {
     switch (e.key) {
       case 'remove':
         dispatch({
-          type: 'deviceauth/remove',
+          type: 'businessBanner/remove',
           payload: e.record ? e.record.id : selectedRows.map(row => row.id),
           callback: () => {
             message.success('删除成功');
             dispatch({
-              type: 'deviceauth/fetch',
+              type: 'businessBanner/fetch',
               payload: {
                 pageNo: this.state.pageNo
               }
@@ -239,7 +243,7 @@ class TableList extends Component<TableListProps, TableListState> {
       });
 
       dispatch({
-        type: 'deviceauth/fetch',
+        type: 'businessBanner/fetch',
         payload: fieldsValue,
       });
     });
@@ -271,12 +275,12 @@ class TableList extends Component<TableListProps, TableListState> {
   handleAdd = (fields: TableListItem) => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'deviceauth/add',
+      type: 'businessBanner/add',
       payload: fields,
       callback: () => {
         message.success('添加成功');
         dispatch({
-          type: 'deviceauth/fetch',
+          type: 'businessBanner/fetch',
           payload: {
             pageNo: this.state.pageNo
           }
@@ -290,12 +294,12 @@ class TableList extends Component<TableListProps, TableListState> {
   handleUpdate = (fields: TableListItem) => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'deviceauth/update',
+      type: 'businessBanner/update',
       payload: fields,
       callback: () => {
         message.success('修改成功');
         dispatch({
-          type: 'deviceauth/fetch',
+          type: 'businessBanner/fetch',
           payload: {
             pageNo: this.state.pageNo
           },
@@ -333,7 +337,7 @@ class TableList extends Component<TableListProps, TableListState> {
 
   render() {
     const {
-      deviceauth: { data },
+      businessBanner: { data },
       loading,
     } = this.props;
 

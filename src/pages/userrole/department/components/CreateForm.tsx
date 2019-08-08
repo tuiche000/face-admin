@@ -1,4 +1,4 @@
-import { Form, Input, Modal, InputNumber, Select, DatePicker } from 'antd';
+import { Form, Input, Modal, InputNumber, Select, Upload, Button, Icon } from 'antd';
 
 import { FormComponentProps } from 'antd/es/form';
 import React, { useState, useEffect } from 'react';
@@ -24,12 +24,15 @@ const CreateForm: React.FC<CreateFormProps> = props => {
 
   const [floors, setFloors] = useState()
   const [detailInfo, setDetailInfo] = useState({
-    device: '',
-    employee: '',
+    avatar: '',
+    displayOrder: 0,
+    floor: '',
+    floorId: '',
+    floorName: '',
     id: '',
-    visitTime: '',
-    visitor: '',
-    times: undefined
+    name: '',
+    remark: '',
+    host: '',
   });
   const [fileList, setFileList] = useState()
 
@@ -45,7 +48,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
     if (hasVal) { // 修改加载数据
       let id = values && values.id
       let detailId = id ? id : ''
-      detail(detailId).then((res: {
+      detail(detailId).then((res:{
         code: string;
         data: TableListItem
       }) => {
@@ -108,7 +111,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
   return (
     <Modal
       destroyOnClose
-      title={hasVal ? "编辑设备授权" : "创建设备授权"}
+      title={hasVal ? "编辑楼层" : "创建楼层"}
       visible={modalVisible}
       onOk={okHandle}
       onCancel={() => {
@@ -121,10 +124,22 @@ const CreateForm: React.FC<CreateFormProps> = props => {
       }}
       afterClose={() => handleUpdateModalVisible && handleUpdateModalVisible(false)}
     >
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="设备">
-        {form.getFieldDecorator('device', {
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="名字">
+        {form.getFieldDecorator('name', {
+          rules: [{ required: true, message: '请输入' }],
+          initialValue: detailInfo && detailInfo.name
+        })(<Input placeholder="请输入" />)}
+      </FormItem>
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="访问地址">
+        {form.getFieldDecorator('host', {
+          rules: [{ required: true, message: '请输入' }],
+          initialValue: detailInfo && detailInfo.host
+        })(<Input placeholder="请输入" />)}
+      </FormItem>
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="楼层">
+        {form.getFieldDecorator('floor', {
           rules: [{ required: true, message: '请选择' }],
-          initialValue: detailInfo && detailInfo.device
+          initialValue: detailInfo && detailInfo.floor
         })(<Select
           // mode="multiple"
           style={{ width: '100%' }}
@@ -142,63 +157,37 @@ const CreateForm: React.FC<CreateFormProps> = props => {
           }
         </Select>)}
       </FormItem>
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="员工">
-        {form.getFieldDecorator('employee', {
-          rules: [{ required: true, message: '请选择' }],
-          initialValue: detailInfo && detailInfo.employee
-        })(<Select
-          // mode="multiple"
-          style={{ width: '100%' }}
-          placeholder="请选择"
-          onChange={(e) => {
-            console.log(e)
-          }}
-        >
-          {
-            floors && floors.map((item: any): JSX.Element => {
-              return (
-                <Option key={item.id} value={item.id}>{item.name}</Option>
-              )
-            })
-          }
-        </Select>)}
+      <Form.Item labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="设备照片" extra="上传设备照片">
+        {form.getFieldDecorator('upload', {
+          // valuePropName: 'fileList',
+          // getValueFromEvent: this.normFile,
+        })(
+          <Upload
+            name="uploadFile"
+            headers={{
+              Authorization: `Bearer ${localStorage.getItem('access_token') || ''}`
+            }}
+            onChange={handleChange}
+            action={process.env.apiUrl + '/api/oss/device/image'}
+            fileList={fileList}
+            listType="picture">
+            <Button>
+              <Icon type="upload" /> 点击上传
+              </Button>
+          </Upload>,
+        )}
+      </Form.Item>
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="备注">
+        {form.getFieldDecorator('remark', {
+          // rules: [{ required: true, message: '请输入' }],
+          initialValue: detailInfo && detailInfo.remark
+        })(<TextArea autosize={
+          { minRows: 2, maxRows: 6 }
+        } placeholder="请输入" />)}
       </FormItem>
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="访客">
-        {form.getFieldDecorator('visitor', {
-          rules: [{ required: true, message: '请选择' }],
-          initialValue: detailInfo && detailInfo.visitor
-        })(<Select
-          // mode="multiple"
-          style={{ width: '100%' }}
-          placeholder="请选择"
-          onChange={(e) => {
-            console.log(e)
-          }}
-        >
-          {
-            floors && floors.map((item: any): JSX.Element => {
-              return (
-                <Option key={item.id} value={item.id}>{item.name}</Option>
-              )
-            })
-          }
-        </Select>)}
-      </FormItem>
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="生效时间">
-        {form.getFieldDecorator('visitTime', {
-          initialValue: detailInfo && detailInfo.visitTime,
-          rules: [{ type: 'object', required: true, message: '请选择' }]
-        })(<DatePicker showTime format="YYYY-MM-DD HH:mm:ss" />)}
-      </FormItem>
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="过期时间">
-        {form.getFieldDecorator('expiredTime', {
-          initialValue: detailInfo && detailInfo.expiredTime,
-          rules: [{ type: 'object', required: true, message: '请选择' }]
-        })(<DatePicker showTime format="YYYY-MM-DD HH:mm:ss" />)}
-      </FormItem>
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="次数">
-        {form.getFieldDecorator('times', {
-          initialValue: detailInfo && detailInfo.times
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="显示顺序">
+        {form.getFieldDecorator('displayOrder', {
+          initialValue: detailInfo && detailInfo.displayOrder
         })(<InputNumber min={0} placeholder="请输入" />)}
       </FormItem>
     </Modal>

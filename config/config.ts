@@ -126,7 +126,34 @@ export default {
               name: 'business-device',
               path: '/business/device',
               component: './business/device',
+            },
+            {
+              name: 'business-banner',
+              path: '/business/banner',
+              component: './business/banner',
             }
+          ]
+        },
+        {
+          name: 'userrole',
+          path: '/userrole',
+          icon: 'smile',
+          routes: [
+            {
+              name: 'userrole-empolyee',
+              path: '/userrole/empolyee',
+              component: './userrole/empolyee',
+            },
+            {
+              name: 'userrole-visitor',
+              path: '/userrole/visitor',
+              component: './userrole/visitor',
+            },
+            {
+              name: 'userrole-department',
+              path: '/userrole/department',
+              component: './userrole/department',
+            },
           ]
         },
         {

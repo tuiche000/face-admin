@@ -1,10 +1,14 @@
 // 表单列表
 export interface TableListItem {
-  device: string
-  employee: string
+  avatar: string
+  displayOrder: number
+  floor: string
+  floorId: string
+  floorName: string
   id: string
-  visitTime: string
-  visitor: string
+  name: string
+  remark: string
+  host: string
 }
 
 // 表单分页
