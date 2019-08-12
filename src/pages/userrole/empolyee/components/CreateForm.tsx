@@ -174,7 +174,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
               Authorization: `Bearer ${localStorage.getItem('access_token') || ''}`
             }}
             onChange={handleChange}
-            action={process.env.apiUrl + '/api/oss/device/image'}
+            action={process.env.config.API_HOST + '/api/oss/device/image'}
             fileList={fileList}
             listType="picture">
             <Button>
