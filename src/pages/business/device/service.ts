@@ -1,8 +1,19 @@
 import request from '@/utils/request';
 import { TableListParams } from './data.d';
 
+export async function floorQuery(params: {
+  sorter?: string;
+  status?: string;
+  name?: string;
+  pageSize: number;
+  pageNo: number;
+}) {
+  return request('/api/oss/floor/query', {
+    params,
+  });
+}
+
 export async function detail(deviceId: string) {
-  console.log('执行了')
   return request(`/api/oss/device/${deviceId}`, {
     method: 'GET'
   });

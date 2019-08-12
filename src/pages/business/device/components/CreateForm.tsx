@@ -3,8 +3,7 @@ import { Form, Input, Modal, InputNumber, Select, Upload, Button, Icon } from 'a
 import { FormComponentProps } from 'antd/es/form';
 import React, { useState, useEffect } from 'react';
 import { TableListItem } from '../data.d';
-import { query } from '@/pages/business/floor/service'
-import { detail } from '@/pages/business/device/service'
+import { detail, floorQuery } from '../service'
 
 const FormItem = Form.Item;
 const { TextArea } = Input
@@ -37,7 +36,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
   const [fileList, setFileList] = useState()
 
   useEffect(() => {
-    query({
+    floorQuery({
       pageNo: 1,
       pageSize: 9999
     }).then(res => {
