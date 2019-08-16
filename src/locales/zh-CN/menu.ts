@@ -11,7 +11,8 @@ export default {
   'menu.userrole.userrole-empolyee': '员工管理',
   'menu.userrole.userrole-visitor': '访客管理',
   'menu.userrole.userrole-department': '部门管理',
-  //
+  // dashboard
+  'menu.analysis': '首页',
   'menu.welcome': '欢迎',
   'menu.more-blocks': '更多区块',
   'menu.home': '首页',

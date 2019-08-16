@@ -1,10 +1,9 @@
-import { Form, Input, Modal, InputNumber, Select, Upload, Button, Icon } from 'antd';
+import { Form, Input, Modal, InputNumber, Select, Upload, Button, Icon, Radio } from 'antd';
 
 import { FormComponentProps } from 'antd/es/form';
 import React, { useState, useEffect } from 'react';
 import { TableListItem } from '../data.d';
-import { query } from '@/pages/business/floor/service'
-import { detail } from '@/pages/business/device/service'
+import { detail } from '../service'
 
 const FormItem = Form.Item;
 const { TextArea } = Input
@@ -22,7 +21,6 @@ interface CreateFormProps extends FormComponentProps {
 const CreateForm: React.FC<CreateFormProps> = props => {
   const { modalVisible, form, handleAdd, handleModalVisible, handleUpdate, handleUpdateModalVisible, values, hasVal } = props;
 
-  const [floors, setFloors] = useState()
   const [detailInfo, setDetailInfo] = useState({
     avatar: '',
     displayOrder: 0,
@@ -37,18 +35,10 @@ const CreateForm: React.FC<CreateFormProps> = props => {
   const [fileList, setFileList] = useState()
 
   useEffect(() => {
-    query({
-      pageNo: 1,
-      pageSize: 9999
-    }).then(res => {
-      if (res.code == "0") {
-        setFloors(res.data && res.data.result)
-      }
-    })
     if (hasVal) { // 修改加载数据
       let id = values && values.id
       let detailId = id ? id : ''
-      detail(detailId).then((res:{
+      detail(detailId).then((res: {
         code: string;
         data: TableListItem
       }) => {
@@ -111,7 +101,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
   return (
     <Modal
       destroyOnClose
-      title={hasVal ? "编辑楼层" : "创建楼层"}
+      title={hasVal ? "创建访客" : "编辑访客"}
       visible={modalVisible}
       onOk={okHandle}
       onCancel={() => {
@@ -130,34 +120,28 @@ const CreateForm: React.FC<CreateFormProps> = props => {
           initialValue: detailInfo && detailInfo.name
         })(<Input placeholder="请输入" />)}
       </FormItem>
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="访问地址">
-        {form.getFieldDecorator('host', {
-          rules: [{ required: true, message: '请输入' }],
-          initialValue: detailInfo && detailInfo.host
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="电话">
+        {form.getFieldDecorator('phone', {
+          rules: [{ required: true, message: '请输入正确的号码', pattern: /^1[3456789][0-9]{9}$/ }],
+          initialValue: detailInfo && detailInfo.phone
+        })(<Input type="number" maxLength={11} placeholder="请输入" />)}
+      </FormItem>
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="性别">
+        {form.getFieldDecorator('gender', {
+          // rules: [{ required: true, message: '请选择' }],
+          initialValue: (detailInfo && detailInfo.gender) || 'MALE'
+        })(<Radio.Group>
+          <Radio value='MALE'>男</Radio>
+          <Radio value='FEMALE'>女</Radio>
+        </Radio.Group>)}
+      </FormItem>
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="访客公司">
+        {form.getFieldDecorator('company', {
+          rules: [{ required: true, message: '请选择' }],
+          initialValue: detailInfo && detailInfo.company
         })(<Input placeholder="请输入" />)}
       </FormItem>
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="楼层">
-        {form.getFieldDecorator('floor', {
-          rules: [{ required: true, message: '请选择' }],
-          initialValue: detailInfo && detailInfo.floor
-        })(<Select
-          // mode="multiple"
-          style={{ width: '100%' }}
-          placeholder="请选择"
-          onChange={(e) => {
-            console.log(e)
-          }}
-        >
-          {
-            floors && floors.map((item: any): JSX.Element => {
-              return (
-                <Option key={item.id} value={item.id}>{item.name}</Option>
-              )
-            })
-          }
-        </Select>)}
-      </FormItem>
-      <Form.Item labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="设备照片" extra="上传设备照片">
+      {/* <Form.Item labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="设备照片" extra="上传设备照片">
         {form.getFieldDecorator('upload', {
           // valuePropName: 'fileList',
           // getValueFromEvent: this.normFile,
@@ -189,7 +173,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
         {form.getFieldDecorator('displayOrder', {
           initialValue: detailInfo && detailInfo.displayOrder
         })(<InputNumber min={0} placeholder="请输入" />)}
-      </FormItem>
+      </FormItem> */}
     </Modal>
   );
 };

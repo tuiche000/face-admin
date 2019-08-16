@@ -28,7 +28,7 @@ export interface ModelType {
 }
 
 const Model: ModelType = {
-  namespace: 'businessDevice',
+  namespace: 'businessVisitor',
 
   state: {
     data: {

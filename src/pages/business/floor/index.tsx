@@ -65,7 +65,7 @@ interface TableListState {
     };
   }) => ({
     businessFloor,
-    loading: loading.models.rule,
+    loading: loading.models.businessFloor,
   }),
 )
 class TableList extends Component<TableListProps, TableListState> {

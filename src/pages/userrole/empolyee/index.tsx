@@ -38,7 +38,7 @@ const getValue = (obj: { [x: string]: string[] }) =>
 interface TableListProps extends FormComponentProps {
   dispatch: Dispatch<any>;
   loading: boolean;
-  businessDevice: StateType;
+  businessUserrole: StateType;
 }
 
 interface TableListState {
@@ -56,18 +56,18 @@ interface TableListState {
 /* eslint react/no-multi-comp:0 */
 @connect(
   ({
-    businessDevice,
+    businessUserrole,
     loading,
   }: {
-    businessDevice: StateType;
+    businessUserrole: StateType;
     loading: {
       models: {
         [key: string]: boolean;
       };
     };
   }) => ({
-    businessDevice,
-    loading: loading.models.rule,
+    businessUserrole,
+    loading: loading.models.businessUserrole,
   }),
 )
 class TableList extends Component<TableListProps, TableListState> {
@@ -94,12 +94,27 @@ class TableList extends Component<TableListProps, TableListState> {
       }
     },
     {
-      title: '楼层',
-      dataIndex: 'floorName',
+      title: '电话',
+      dataIndex: 'phone',
     },
     {
-      title: '显示顺序',
-      dataIndex: 'displayOrder',
+      title: '员工编号',
+      dataIndex: 'empcode'
+    },
+    {
+      title: '性别',
+      dataIndex: 'gender',
+      render: (text, record) => {
+        return (<span>
+          { 
+            text == 'MALE' ? '男' :  '女'
+          }
+        </span>)
+      }
+    },
+    {
+      title: '部门',
+      dataIndex: 'department.name',
     },
     {
       title: '操作',
@@ -129,7 +144,7 @@ class TableList extends Component<TableListProps, TableListState> {
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'businessDevice/fetch',
+      type: 'businessUserrole/fetch',
     });
   }
 
@@ -160,7 +175,7 @@ class TableList extends Component<TableListProps, TableListState> {
       pageNo: pagination.current
     })
     dispatch({
-      type: 'businessDevice/fetch',
+      type: 'businessUserrole/fetch',
       payload: params,
     });
   };
@@ -172,7 +187,7 @@ class TableList extends Component<TableListProps, TableListState> {
       formValues: {},
     });
     dispatch({
-      type: 'businessDevice/fetch',
+      type: 'businessUserrole/fetch',
       payload: {},
     });
   };
@@ -192,12 +207,12 @@ class TableList extends Component<TableListProps, TableListState> {
     switch (e.key) {
       case 'remove':
         dispatch({
-          type: 'businessDevice/remove',
+          type: 'businessUserrole/remove',
           payload: e.record ? e.record.id : selectedRows.map(row => row.id),
           callback: () => {
             message.success('删除成功');
             dispatch({
-              type: 'businessDevice/fetch',
+              type: 'businessUserrole/fetch',
               payload: {
                 pageNo: this.state.pageNo
               }
@@ -236,7 +251,7 @@ class TableList extends Component<TableListProps, TableListState> {
       });
 
       dispatch({
-        type: 'businessDevice/fetch',
+        type: 'businessUserrole/fetch',
         payload: fieldsValue,
       });
     });
@@ -268,12 +283,12 @@ class TableList extends Component<TableListProps, TableListState> {
   handleAdd = (fields: TableListItem) => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'businessDevice/add',
+      type: 'businessUserrole/add',
       payload: fields,
       callback: () => {
         message.success('添加成功');
         dispatch({
-          type: 'businessDevice/fetch',
+          type: 'businessUserrole/fetch',
           payload: {
             pageNo: this.state.pageNo
           }
@@ -287,12 +302,12 @@ class TableList extends Component<TableListProps, TableListState> {
   handleUpdate = (fields: TableListItem) => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'businessDevice/update',
+      type: 'businessUserrole/update',
       payload: fields,
       callback: () => {
         message.success('修改成功');
         dispatch({
-          type: 'businessDevice/fetch',
+          type: 'businessUserrole/fetch',
           payload: {
             pageNo: this.state.pageNo
           },
@@ -330,7 +345,7 @@ class TableList extends Component<TableListProps, TableListState> {
 
   render() {
     const {
-      businessDevice: { data },
+      businessUserrole: { data },
       loading,
     } = this.props;
 

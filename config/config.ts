@@ -5,12 +5,15 @@ import slash from 'slash2';
 import webpackPlugin from './plugin.config';
 const { pwa, primaryColor } = defaultSettings; // preview.pro.ant.design only do not use in your production ;
 // preview.pro.ant.design 专用环境变量，请不要在你的项目中使用它。
-let config = {}
+
+let config = {};
+
 if (process.env.NODE_ENV == 'development') {
-  config = require('./dev.env')
-} else {
-  config = require('./prod.env')
+  config = require('./dev.env');
+} else if (process.env.NODE_ENV == 'production') {
+  config = require('./prod.env');
 }
+
 const { ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION } = process.env;
 const isAntDesignProPreview = ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION === 'site';
 const plugins: IPlugin[] = [
@@ -36,11 +39,11 @@ const plugins: IPlugin[] = [
       },
       pwa: pwa
         ? {
-          workboxPluginMode: 'InjectManifest',
-          workboxOptions: {
-            importWorkboxFrom: 'local',
-          },
-        }
+            workboxPluginMode: 'InjectManifest',
+            workboxOptions: {
+              importWorkboxFrom: 'local',
+            },
+          }
         : false, // default close dll, because issue https://github.com/ant-design/ant-design-pro/issues/4665
       // dll features https://webpack.js.org/plugins/dll-plugin/
       // dll: {
@@ -81,6 +84,8 @@ export default {
     defaultGitUrl: 'https://github.com/ant-design/pro-blocks',
   },
   hash: true,
+  base: '/rlsb/',
+  publicPath: '/rlsb/',
   targets: {
     ie: 11,
   },
@@ -95,7 +100,7 @@ export default {
           name: 'user-login',
           path: '/user/login',
           component: './login',
-        }
+        },
       ],
     },
     {
@@ -106,10 +111,20 @@ export default {
       routes: [
         {
           path: '/',
-          name: 'welcome',
-          icon: 'smile',
-          component: './Welcome',
+          redirect: './dashboard/analysis',
         },
+        {
+          name: 'analysis',
+          path: '/dashboard/analysis',
+          icon: 'dashboard',
+          component: './dashboard/analysis',
+        },
+        // {
+        //   path: '/',
+        //   name: 'welcome',
+        //   icon: 'smile',
+        //   component: './Welcome',
+        // },
         {
           name: 'deviceauth',
           path: '/deviceauth',
@@ -135,8 +150,8 @@ export default {
               name: 'business-banner',
               path: '/business/banner',
               component: './business/banner',
-            }
-          ]
+            },
+          ],
         },
         {
           name: 'userrole',
@@ -158,7 +173,7 @@ export default {
               path: '/userrole/department',
               component: './userrole/department',
             },
-          ]
+          ],
         },
         {
           name: 'list',
@@ -179,7 +194,7 @@ export default {
     'primary-color': primaryColor,
   },
   define: {
-    "process.env.config": config,
+    'process.env.config': config,
     ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION:
       ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION || '', // preview.pro.ant.design only do not use in your production ; preview.pro.ant.design 专用环境变量，请不要在你的项目中使用它。
   },
@@ -227,7 +242,9 @@ export default {
     '/api': {
       target: 'http://visit.fothing.com',
       changeOrigin: true,
-      pathRewrite: { '^/api': '/api' },
+      pathRewrite: {
+        '^/api': '/api',
+      },
     },
   },
 } as IConfig;
