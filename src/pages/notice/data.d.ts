@@ -1,8 +1,14 @@
 // 表单列表
 export interface TableListItem {
-  id: string
-  name: string
-  organization: string
+  id: string;
+  noticeType: string;
+  title: string;
+  content: string;
+  employee: string;
+  visitor: string;
+  published: Date;
+  readtime: Date;
+  readed: boolean;
 }
 
 // 表单分页
@@ -20,7 +26,9 @@ export interface TableListData {
 
 // 表单组件参数
 export interface TableListParams {
-  name: string
-  organization: string
-  parentId?: number
+  sorter: string;
+  status: string;
+  name: string;
+  pageSize: number;
+  pageNo: number;
 }

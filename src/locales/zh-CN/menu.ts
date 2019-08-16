@@ -13,6 +13,9 @@ export default {
   'menu.userrole.userrole-department': '部门管理',
   // dashboard
   'menu.analysis': '首页',
+  // notice
+  'menu.notice': '消息管理',
+  //
   'menu.welcome': '欢迎',
   'menu.more-blocks': '更多区块',
   'menu.home': '首页',

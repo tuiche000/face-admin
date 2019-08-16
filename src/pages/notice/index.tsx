@@ -38,7 +38,7 @@ const getValue = (obj: { [x: string]: string[] }) =>
 interface TableListProps extends FormComponentProps {
   dispatch: Dispatch<any>;
   loading: boolean;
-  userroleDepartment: StateType;
+  notice: StateType;
 }
 
 interface TableListState {
@@ -56,18 +56,18 @@ interface TableListState {
 /* eslint react/no-multi-comp:0 */
 @connect(
   ({
-    userroleDepartment,
+    notice,
     loading,
   }: {
-    userroleDepartment: StateType;
+    notice: StateType;
     loading: {
       models: {
         [key: string]: boolean;
       };
     };
   }) => ({
-    userroleDepartment,
-    loading: loading.models.userroleDepartment,
+    notice,
+    loading: loading.models.notice,
   }),
 )
 class TableList extends Component<TableListProps, TableListState> {
@@ -94,13 +94,13 @@ class TableList extends Component<TableListProps, TableListState> {
       }
     },
     {
-      title: '机构',
-      dataIndex: 'organization',
+      title: '楼层',
+      dataIndex: 'floorName',
     },
-    // {
-    //   title: '显示顺序',
-    //   dataIndex: 'displayOrder',
-    // },
+    {
+      title: '显示顺序',
+      dataIndex: 'displayOrder',
+    },
     {
       title: '操作',
       render: (text, record) => (
@@ -129,7 +129,7 @@ class TableList extends Component<TableListProps, TableListState> {
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'userroleDepartment/fetch',
+      type: 'notice/fetch',
     });
   }
 
@@ -148,17 +148,19 @@ class TableList extends Component<TableListProps, TableListState> {
     }, {});
 
     const params: Partial<TableListParams> = {
+      pageNo: pagination.current,
+      pageSize: pagination.pageSize,
       ...formValues,
       ...filters,
     };
-    // if (sorter.field) {
-    //   params.sorter = `${sorter.field}_${sorter.order}`;
-    // }
+    if (sorter.field) {
+      params.sorter = `${sorter.field}_${sorter.order}`;
+    }
     this.setState({
       pageNo: pagination.current
     })
     dispatch({
-      type: 'userroleDepartment/fetch',
+      type: 'notice/fetch',
       payload: params,
     });
   };
@@ -170,7 +172,7 @@ class TableList extends Component<TableListProps, TableListState> {
       formValues: {},
     });
     dispatch({
-      type: 'userroleDepartment/fetch',
+      type: 'notice/fetch',
       payload: {},
     });
   };
@@ -190,12 +192,12 @@ class TableList extends Component<TableListProps, TableListState> {
     switch (e.key) {
       case 'remove':
         dispatch({
-          type: 'userroleDepartment/remove',
+          type: 'notice/remove',
           payload: e.record ? e.record.id : selectedRows.map(row => row.id),
           callback: () => {
             message.success('删除成功');
             dispatch({
-              type: 'userroleDepartment/fetch',
+              type: 'notice/fetch',
               payload: {
                 pageNo: this.state.pageNo
               }
@@ -234,7 +236,7 @@ class TableList extends Component<TableListProps, TableListState> {
       });
 
       dispatch({
-        type: 'userroleDepartment/fetch',
+        type: 'notice/fetch',
         payload: fieldsValue,
       });
     });
@@ -266,12 +268,12 @@ class TableList extends Component<TableListProps, TableListState> {
   handleAdd = (fields: TableListItem) => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'userroleDepartment/add',
+      type: 'notice/add',
       payload: fields,
       callback: () => {
         message.success('添加成功');
         dispatch({
-          type: 'userroleDepartment/fetch',
+          type: 'notice/fetch',
           payload: {
             pageNo: this.state.pageNo
           }
@@ -285,12 +287,12 @@ class TableList extends Component<TableListProps, TableListState> {
   handleUpdate = (fields: TableListItem) => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'userroleDepartment/update',
+      type: 'notice/update',
       payload: fields,
       callback: () => {
         message.success('修改成功');
         dispatch({
-          type: 'userroleDepartment/fetch',
+          type: 'notice/fetch',
           payload: {
             pageNo: this.state.pageNo
           },
@@ -328,7 +330,7 @@ class TableList extends Component<TableListProps, TableListState> {
 
   render() {
     const {
-      userroleDepartment: { data },
+      notice: { data },
       loading,
     } = this.props;
 

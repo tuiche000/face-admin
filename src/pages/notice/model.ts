@@ -28,7 +28,7 @@ export interface ModelType {
 }
 
 const Model: ModelType = {
-  namespace: 'userroleDepartment',
+  namespace: 'notice',
 
   state: {
     data: {
@@ -41,11 +41,11 @@ const Model: ModelType = {
     *fetch({ payload }, { call, put }) {
       const response = yield call(query, payload);
       let data:Partial<TableListData> = {}
-      // data.list = response.data
+      data.list = response.data && response.data.result
       data.pagination = {
-        // total: response.data && response.data.totalResults,
-        // pageSize: response.data && response.data.pageSize,
-        // current: response.data && response.data.pageNo
+        total: response.data && response.data.totalResults,
+        pageSize: response.data && response.data.pageSize,
+        current: response.data && response.data.pageNo
       }
       yield put({
         type: 'save',

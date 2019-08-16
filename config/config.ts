@@ -128,13 +128,19 @@ export default {
         {
           name: 'deviceauth',
           path: '/deviceauth',
-          icon: 'smile',
+          icon: 'setting',
           component: './deviceauth',
+        },
+        {
+          name: 'notice',
+          path: '/notice',
+          icon: 'message',
+          component: './notice',
         },
         {
           name: 'business',
           path: '/business',
-          icon: 'smile',
+          icon: 'setting',
           routes: [
             {
               name: 'business-floor',
@@ -156,7 +162,7 @@ export default {
         {
           name: 'userrole',
           path: '/userrole',
-          icon: 'smile',
+          icon: 'team',
           routes: [
             {
               name: 'userrole-empolyee',

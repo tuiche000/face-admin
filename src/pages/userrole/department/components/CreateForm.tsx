@@ -1,14 +1,11 @@
-import { Form, Input, Modal, InputNumber, Select, Upload, Button, Icon } from 'antd';
+import { Form, Input, Modal } from 'antd';
 
 import { FormComponentProps } from 'antd/es/form';
 import React, { useState, useEffect } from 'react';
 import { TableListItem } from '../data.d';
-import { query } from '@/pages/business/floor/service'
-import { detail } from '@/pages/business/device/service'
+import { detail } from '../service'
 
 const FormItem = Form.Item;
-const { TextArea } = Input
-const { Option } = Select
 
 interface CreateFormProps extends FormComponentProps {
   modalVisible: boolean;
@@ -22,33 +19,18 @@ interface CreateFormProps extends FormComponentProps {
 const CreateForm: React.FC<CreateFormProps> = props => {
   const { modalVisible, form, handleAdd, handleModalVisible, handleUpdate, handleUpdateModalVisible, values, hasVal } = props;
 
-  const [floors, setFloors] = useState()
   const [detailInfo, setDetailInfo] = useState({
-    avatar: '',
-    displayOrder: 0,
-    floor: '',
-    floorId: '',
-    floorName: '',
     id: '',
     name: '',
-    remark: '',
-    host: '',
+    organization: ''
   });
   const [fileList, setFileList] = useState()
 
   useEffect(() => {
-    query({
-      pageNo: 1,
-      pageSize: 9999
-    }).then(res => {
-      if (res.code == "0") {
-        setFloors(res.data && res.data.result)
-      }
-    })
     if (hasVal) { // 修改加载数据
       let id = values && values.id
       let detailId = id ? id : ''
-      detail(detailId).then((res:{
+      detail(detailId).then((res: {
         code: string;
         data: TableListItem
       }) => {
@@ -76,42 +58,10 @@ const CreateForm: React.FC<CreateFormProps> = props => {
     });
   };
 
-  const handleChange = (info: {
-    file: any,
-    fileList: any[]
-  }) => {
-    let fileList = [...info.fileList];
-
-    // 1. Limit the number of uploaded files
-    // Only to show two recent uploaded files, and old ones will be replaced by the new
-    fileList = fileList.slice(-1);
-
-    // 2. Read from response and show file link
-    fileList = fileList.map(file => {
-      if (file.response) {
-        // Component will show file.url as link
-        file.url = file.response.data.resource;
-      }
-      return file;
-    });
-    setFileList(fileList)
-  }
-
-  if (hasVal && !fileList) {
-    setFileList([
-      {
-        uid: values && values.id,
-        name: values && values.name,
-        status: 'done',
-        url: values && values.avatar,
-      }
-    ])
-  }
-
   return (
     <Modal
       destroyOnClose
-      title={hasVal ? "编辑楼层" : "创建楼层"}
+      title={hasVal ? "编辑部门" : "创建部门"}
       visible={modalVisible}
       onOk={okHandle}
       onCancel={() => {
@@ -130,66 +80,17 @@ const CreateForm: React.FC<CreateFormProps> = props => {
           initialValue: detailInfo && detailInfo.name
         })(<Input placeholder="请输入" />)}
       </FormItem>
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="访问地址">
-        {form.getFieldDecorator('host', {
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="机构">
+        {form.getFieldDecorator('organization', {
           rules: [{ required: true, message: '请输入' }],
-          initialValue: detailInfo && detailInfo.host
+          initialValue: detailInfo && detailInfo.organization
         })(<Input placeholder="请输入" />)}
       </FormItem>
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="楼层">
-        {form.getFieldDecorator('floor', {
-          rules: [{ required: true, message: '请选择' }],
-          initialValue: detailInfo && detailInfo.floor
-        })(<Select
-          // mode="multiple"
-          style={{ width: '100%' }}
-          placeholder="请选择"
-          onChange={(e) => {
-            console.log(e)
-          }}
-        >
-          {
-            floors && floors.map((item: any): JSX.Element => {
-              return (
-                <Option key={item.id} value={item.id}>{item.name}</Option>
-              )
-            })
-          }
-        </Select>)}
-      </FormItem>
-      <Form.Item labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="设备照片" extra="上传设备照片">
-        {form.getFieldDecorator('upload', {
-          // valuePropName: 'fileList',
-          // getValueFromEvent: this.normFile,
-        })(
-          <Upload
-            name="uploadFile"
-            headers={{
-              Authorization: `Bearer ${localStorage.getItem('access_token') || ''}`
-            }}
-            onChange={handleChange}
-            action={process.env.config.API_HOST + '/api/oss/device/image'}
-            fileList={fileList}
-            listType="picture">
-            <Button>
-              <Icon type="upload" /> 点击上传
-              </Button>
-          </Upload>,
-        )}
-      </Form.Item>
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="备注">
-        {form.getFieldDecorator('remark', {
-          // rules: [{ required: true, message: '请输入' }],
-          initialValue: detailInfo && detailInfo.remark
-        })(<TextArea autosize={
-          { minRows: 2, maxRows: 6 }
-        } placeholder="请输入" />)}
-      </FormItem>
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="显示顺序">
+      {/* <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="显示顺序">
         {form.getFieldDecorator('displayOrder', {
           initialValue: detailInfo && detailInfo.displayOrder
         })(<InputNumber min={0} placeholder="请输入" />)}
-      </FormItem>
+      </FormItem> */}
     </Modal>
   );
 };
