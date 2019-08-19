@@ -1,6 +1,31 @@
 import request from '@/utils/request';
 import { TableListParams } from './data.d';
 
+export async function device() {
+  return request(`/api/oss/device/query`, {
+    method: 'GET',
+    params: {
+      pageSize: 999
+    }
+  });
+}
+export async function employee() {
+  return request(`/api/oss/employee/query`, {
+    method: 'GET',
+    params: {
+      pageSize: 999
+    }
+  });
+}
+export async function visitor() {
+  return request(`/api/oss/visitor/query`, {
+    method: 'GET',
+    params: {
+      pageSize: 999
+    }
+  });
+}
+
 export async function detail(deviceId: string) {
   return request(`/api/oss/deviceauth/${deviceId}`, {
     method: 'GET'

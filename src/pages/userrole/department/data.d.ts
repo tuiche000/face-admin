@@ -2,7 +2,8 @@
 export interface TableListItem {
   id: string
   name: string
-  organization: string
+  organization: string,
+  parentId?: string
 }
 
 // 表单分页

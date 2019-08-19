@@ -124,7 +124,8 @@ const BasicLayout: React.FC<BasicLayoutProps> = props => {
           <span>{route.breadcrumbName}</span>
         );
       }}
-      footerRender={footerRender}
+      footerRender={false}
+      // footerRender={footerRender}
       menuDataRender={menuDataRender}
       formatMessage={formatMessage}
       rightContentRender={rightProps => <RightContent {...rightProps} />}

@@ -54,7 +54,7 @@ export default {
   menu: {
     locale: true,
   },
-  title: 'Ant Design Pro',
+  title: '人脸识别门禁系统',
   pwa: false,
   iconfontUrl: '',
 } as DefaultSettings;

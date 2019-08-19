@@ -1,20 +1,33 @@
 import request from '@/utils/request';
 import { TableListParams } from './data.d';
 
-export async function floorQuery(params: {
-  sorter?: string;
-  status?: string;
-  name?: string;
-  pageSize: number;
-  pageNo: number;
-}) {
-  return request('/api/oss/floor/query', {
-    params,
+export async function employee() {
+  return request(`/api/oss/employee/query`, {
+    method: 'GET',
+    params: {
+      pageSize: 999
+    }
+  });
+}
+export async function visitor() {
+  return request(`/api/oss/visitor/query`, {
+    method: 'GET',
+    params: {
+      pageSize: 999
+    }
+  });
+}
+export async function type() {
+  return request(`/api/oss/common/enum/NOTICE_TYPE`, {
+    method: 'GET',
+    params: {
+      pageSize: 999
+    }
   });
 }
 
-export async function detail(deviceId: string) {
-  return request(`/api/oss/notice/${deviceId}`, {
+export async function detail(id: string) {
+  return request(`/api/oss/notice/${id}`, {
     method: 'GET'
   });
 }

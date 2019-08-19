@@ -67,7 +67,7 @@ interface TableListState {
     };
   }) => ({
     deviceauth,
-    loading: loading.models.rule,
+    loading: loading.models.deviceauth,
   }),
 )
 class TableList extends Component<TableListProps, TableListState> {

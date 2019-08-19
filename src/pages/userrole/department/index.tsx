@@ -95,7 +95,7 @@ class TableList extends Component<TableListProps, TableListState> {
     },
     {
       title: '机构',
-      dataIndex: 'organization',
+      dataIndex: 'code',
     },
     // {
     //   title: '显示顺序',
@@ -330,6 +330,7 @@ class TableList extends Component<TableListProps, TableListState> {
     const {
       userroleDepartment: { data },
       loading,
+
     } = this.props;
 
     const { selectedRows, modalVisible, updateModalVisible, stepFormValues, type } = this.state;
@@ -379,13 +380,18 @@ class TableList extends Component<TableListProps, TableListState> {
             />
           </div>
         </Card>
-        <CreateForm {...parentMethods} hasVal={false} modalVisible={modalVisible} />
+        {
+          data.list ? (
+            <CreateForm {...parentMethods} hasVal={false} departments={data.list} modalVisible={modalVisible} />
+          ) : null
+        }
         {
           type == 'update' ? (
             <CreateForm
               {...updateMethods}
               hasVal={true}
               modalVisible={updateModalVisible}
+              departments={data.list}
               values={stepFormValues} />
           ) : null
         }

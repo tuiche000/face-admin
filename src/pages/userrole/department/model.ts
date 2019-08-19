@@ -40,13 +40,10 @@ const Model: ModelType = {
   effects: {
     *fetch({ payload }, { call, put }) {
       const response = yield call(query, payload);
+      console.log(response.data)
       let data:Partial<TableListData> = {}
-      // data.list = response.data
-      data.pagination = {
-        // total: response.data && response.data.totalResults,
-        // pageSize: response.data && response.data.pageSize,
-        // current: response.data && response.data.pageNo
-      }
+      data.list = response.data
+      data.pagination = {}
       yield put({
         type: 'save',
         payload: data,

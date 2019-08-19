@@ -85,21 +85,36 @@ class TableList extends Component<TableListProps, TableListState> {
 
   columns: StandardTableColumnProps[] = [
     {
-      title: '名字',
-      dataIndex: 'name',
+      title: '消息类型',
+      dataIndex: 'noticeType',
+    },
+    {
+      title: '标题',
+      dataIndex: 'title',
+    },
+    {
+      title: '内容',
+      dataIndex: 'content',
+      width: 300,
+    },
+    {
+      title: '员工',
+      dataIndex: 'employee',
+    },
+    {
+      title: '访客',
+      dataIndex: 'visitor',
+    },
+    {
+      title: '发送时间',
+      dataIndex: 'published',
+    },
+    {
+      title: '是否已读',
+      dataIndex: 'readed',
       render: (text, record) => {
-        return (
-          <a href="javascript:void(0);" onClick={() => this.handleDrawerVisible(true, record)}>{text}</a>
-        )
+        return <span>{text == true ? '是' : '否'}</span>
       }
-    },
-    {
-      title: '楼层',
-      dataIndex: 'floorName',
-    },
-    {
-      title: '显示顺序',
-      dataIndex: 'displayOrder',
     },
     {
       title: '操作',

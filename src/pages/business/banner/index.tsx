@@ -67,7 +67,7 @@ interface TableListState {
     };
   }) => ({
     businessBanner,
-    loading: loading.models.rule,
+    loading: loading.models.businessBanner,
   }),
 )
 class TableList extends Component<TableListProps, TableListState> {

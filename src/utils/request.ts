@@ -3,7 +3,9 @@
  * 更详细的 api 文档: https://github.com/umijs/umi-request
  */
 import { extend } from 'umi-request';
-import { notification } from 'antd';
+import { notification, Modal } from 'antd';
+import { routerRedux } from 'dva/router';
+import { stringify } from 'qs';
 
 const codeMessage = {
   200: '服务器成功返回请求的数据。',
@@ -29,6 +31,21 @@ const codeMessage = {
 const errorHandler = (error: { response: Response }): Response => {
   const { response } = error;
   if (response && response.status) {
+    if (response.status == 401 && window.location.pathname != '/user/login') {
+      Modal.error({
+        title: '请求错误',
+        okText: '去登录',
+        content: codeMessage[response.status],
+        onOk: () => {
+          window.location.replace(`/user/login?${stringify({
+            redirect: window.location.href,
+          })}`)
+        }
+      });
+      return response
+    }
+
+
     const errorText = codeMessage[response.status] || response.statusText;
     const { status, url } = response;
 

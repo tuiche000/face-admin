@@ -3,11 +3,10 @@ import { Form, Input, Modal, InputNumber, Select, DatePicker } from 'antd';
 import { FormComponentProps } from 'antd/es/form';
 import React, { useState, useEffect } from 'react';
 import { TableListItem } from '../data.d';
-import { query } from '@/pages/business/floor/service'
-import { detail } from '@/pages/business/device/service'
+import { detail, device, employee, visitor } from '../service'
+import moment from 'moment';
 
 const FormItem = Form.Item;
-const { TextArea } = Input
 const { Option } = Select
 
 interface CreateFormProps extends FormComponentProps {
@@ -22,24 +21,33 @@ interface CreateFormProps extends FormComponentProps {
 const CreateForm: React.FC<CreateFormProps> = props => {
   const { modalVisible, form, handleAdd, handleModalVisible, handleUpdate, handleUpdateModalVisible, values, hasVal } = props;
 
-  const [floors, setFloors] = useState()
+  const [devices, setDevices] = useState()
+  const [employees, setemployees] = useState()
+  const [visitors, setVisitors] = useState()
   const [detailInfo, setDetailInfo] = useState({
     device: '',
     employee: '',
     id: '',
     visitTime: '',
+    expiredTime: '',
     visitor: '',
     times: undefined
   });
-  const [fileList, setFileList] = useState()
 
   useEffect(() => {
-    query({
-      pageNo: 1,
-      pageSize: 9999
-    }).then(res => {
+    device().then((res) => {
       if (res.code == "0") {
-        setFloors(res.data && res.data.result)
+        setDevices(res.data && res.data.result)
+      }
+    })
+    employee().then(res => {
+      if (res.code == "0") {
+        setemployees(res.data && res.data.result)
+      }
+    })
+    visitor().then(res => {
+      if (res.code == "0") {
+        setVisitors(res.data && res.data.result)
       }
     })
     if (hasVal) { // 修改加载数据
@@ -59,51 +67,17 @@ const CreateForm: React.FC<CreateFormProps> = props => {
   const okHandle = () => {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-
-      fieldsValue.avatar = (fileList && fileList.length) ? fileList[0].url : undefined
+      fieldsValue.visitTime = moment(fieldsValue.visitTime).format('YYYY-MM-DD HH:mm:ss')
+      fieldsValue.expiredTime = moment(fieldsValue.expiredTime).format('YYYY-MM-DD HH:mm:ss')
       form.resetFields();
-      setFileList([])
       if (hasVal) { //修改的
         fieldsValue.id = detailInfo.id
-        console.log('修改')
         handleUpdate && handleUpdate(fieldsValue)
         return
       }
       handleAdd && handleAdd(fieldsValue);
     });
   };
-
-  const handleChange = (info: {
-    file: any,
-    fileList: any[]
-  }) => {
-    let fileList = [...info.fileList];
-
-    // 1. Limit the number of uploaded files
-    // Only to show two recent uploaded files, and old ones will be replaced by the new
-    fileList = fileList.slice(-1);
-
-    // 2. Read from response and show file link
-    fileList = fileList.map(file => {
-      if (file.response) {
-        // Component will show file.url as link
-        file.url = file.response.data.resource;
-      }
-      return file;
-    });
-    setFileList(fileList)
-  }
-
-  if (hasVal && !fileList) {
-    setFileList([
-      {
-        uid: values && values.id,
-        name: values && values.name,
-        status: 'done',
-        url: values && values.avatar,
-      }
-    ])
-  }
 
   return (
     <Modal
@@ -112,7 +86,6 @@ const CreateForm: React.FC<CreateFormProps> = props => {
       visible={modalVisible}
       onOk={okHandle}
       onCancel={() => {
-        setFileList([])
         if (hasVal) {
           handleUpdateModalVisible && handleUpdateModalVisible(false, detailInfo)
         } else {
@@ -134,7 +107,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
           }}
         >
           {
-            floors && floors.map((item: any): JSX.Element => {
+            devices && devices.map((item: any): JSX.Element => {
               return (
                 <Option key={item.id} value={item.id}>{item.name}</Option>
               )
@@ -155,7 +128,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
           }}
         >
           {
-            floors && floors.map((item: any): JSX.Element => {
+            employees && employees.map((item: any): JSX.Element => {
               return (
                 <Option key={item.id} value={item.id}>{item.name}</Option>
               )
@@ -176,7 +149,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
           }}
         >
           {
-            floors && floors.map((item: any): JSX.Element => {
+            visitors && visitors.map((item: any): JSX.Element => {
               return (
                 <Option key={item.id} value={item.id}>{item.name}</Option>
               )

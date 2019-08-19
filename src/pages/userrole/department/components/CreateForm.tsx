@@ -1,4 +1,4 @@
-import { Form, Input, Modal } from 'antd';
+import { Form, Input, Modal, Select } from 'antd';
 
 import { FormComponentProps } from 'antd/es/form';
 import React, { useState, useEffect } from 'react';
@@ -6,25 +6,27 @@ import { TableListItem } from '../data.d';
 import { detail } from '../service'
 
 const FormItem = Form.Item;
+const Option = Select.Option;
 
 interface CreateFormProps extends FormComponentProps {
   modalVisible: boolean;
   hasVal: boolean; // true=>编辑 false=>新增
   values?: Partial<TableListItem>;
+  departments: TableListItem[];
   handleAdd?: (fieldsValue: TableListItem) => void;
   handleModalVisible?: () => void;
   handleUpdate?: (fieldsValue: TableListItem) => void;
   handleUpdateModalVisible?: (flag?: boolean, record?: TableListItem) => void;
 }
 const CreateForm: React.FC<CreateFormProps> = props => {
-  const { modalVisible, form, handleAdd, handleModalVisible, handleUpdate, handleUpdateModalVisible, values, hasVal } = props;
+  const { modalVisible, form, handleAdd, handleModalVisible, handleUpdate, handleUpdateModalVisible, values, hasVal, departments } = props;
 
   const [detailInfo, setDetailInfo] = useState({
     id: '',
     name: '',
-    organization: ''
+    organization: '',
+    parentId: ''
   });
-  const [fileList, setFileList] = useState()
 
   useEffect(() => {
     if (hasVal) { // 修改加载数据
@@ -45,9 +47,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
 
-      fieldsValue.avatar = (fileList && fileList.length) ? fileList[0].url : undefined
       form.resetFields();
-      setFileList([])
       if (hasVal) { //修改的
         fieldsValue.id = detailInfo.id
         console.log('修改')
@@ -65,7 +65,6 @@ const CreateForm: React.FC<CreateFormProps> = props => {
       visible={modalVisible}
       onOk={okHandle}
       onCancel={() => {
-        setFileList([])
         if (hasVal) {
           handleUpdateModalVisible && handleUpdateModalVisible(false, detailInfo)
         } else {
@@ -80,17 +79,32 @@ const CreateForm: React.FC<CreateFormProps> = props => {
           initialValue: detailInfo && detailInfo.name
         })(<Input placeholder="请输入" />)}
       </FormItem>
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="机构">
+      {/* <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="机构">
         {form.getFieldDecorator('organization', {
           rules: [{ required: true, message: '请输入' }],
           initialValue: detailInfo && detailInfo.organization
         })(<Input placeholder="请输入" />)}
-      </FormItem>
-      {/* <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="显示顺序">
-        {form.getFieldDecorator('displayOrder', {
-          initialValue: detailInfo && detailInfo.displayOrder
-        })(<InputNumber min={0} placeholder="请输入" />)}
       </FormItem> */}
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="所属部门">
+        {form.getFieldDecorator('parentId', {
+          initialValue: detailInfo && detailInfo.parentId
+        })(<Select
+          // mode="multiple"
+          style={{ width: '100%' }}
+          placeholder="请选择"
+          onChange={(e) => {
+            console.log(e)
+          }}
+        >
+          {
+            departments.map((item: TableListItem): JSX.Element => {
+              return (
+                <Option key={item.id} value={item.id}>{item.name}</Option>
+              )
+            })
+          }
+        </Select>)}
+      </FormItem>
     </Modal>
   );
 };
