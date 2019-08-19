@@ -4,7 +4,6 @@
  */
 import { extend } from 'umi-request';
 import { notification, Modal } from 'antd';
-import { routerRedux } from 'dva/router';
 import { stringify } from 'qs';
 
 const codeMessage = {
@@ -64,8 +63,20 @@ const request = extend({
   headers: {
     Authorization: `Bearer ${localStorage.getItem('access_token') || ''}`  // 统一的headers
   },
+  prefix: process.env.config.API_HOST,
   errorHandler, // 默认错误处理
-  credentials: 'include', // 默认请求是否带上cookie
+  credentials: 'omit', // 默认请求是否带上cookie
 });
+
+// request拦截器, 改变url 或 options.
+// request.interceptors.request.use((url, options) => {
+//   url = process.env.config.API_HOST + url
+//   return (
+//     {
+//       url,
+//       options: { ...options, interceptors: true },
+//     }
+//   );
+// });
 
 export default request;

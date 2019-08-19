@@ -244,13 +244,13 @@ export default {
     basePath: '/',
   },
   chainWebpack: webpackPlugin,
-  proxy: {
-    '/api': {
-      target: 'http://visit.fothing.com',
-      changeOrigin: true,
-      pathRewrite: {
-        '^/api': '/api',
-      },
-    },
-  },
+  // proxy: {
+  //   '/api': {
+  //     target: 'http://visit.fothing.com',
+  //     changeOrigin: true,
+  //     pathRewrite: {
+  //       '^/api': '/api',
+  //     },
+  //   },
+  // },
 } as IConfig;
