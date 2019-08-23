@@ -87,11 +87,11 @@ class TableList extends Component<TableListProps, TableListState> {
     {
       title: '名字',
       dataIndex: 'name',
-      render: (text, record) => {
-        return (
-          <a href="javascript:void(0);" onClick={() => this.handleDrawerVisible(true, record)}>{text}</a>
-        )
-      }
+      // render: (text, record) => {
+      //   return (
+      //     <a href="javascript:void(0);" onClick={() => this.handleDrawerVisible(true, record)}>{text}</a>
+      //   )
+      // }
     },
     {
       title: '电话',

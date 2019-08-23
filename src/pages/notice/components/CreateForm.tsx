@@ -3,7 +3,7 @@ import { Form, Input, Modal, Switch, Select, DatePicker } from 'antd';
 import { FormComponentProps } from 'antd/es/form';
 import React, { useState, useEffect } from 'react';
 import { TableListItem } from '../data.d';
-import { detail, employee, visitor, type  } from '../service'
+import { detail, employee, visitor, type } from '../service'
 import moment from 'moment';
 
 const FormItem = Form.Item;
@@ -16,7 +16,7 @@ interface CreateFormProps extends FormComponentProps {
   values?: Partial<TableListItem>;
   handleAdd?: (fieldsValue: TableListItem) => void;
   handleModalVisible?: () => void;
-  handleUpdate?: (fieldsValue: TableListItem) => void;
+  handleUpdate?: (fieldsValue: Partial<TableListItem>) => void;
   handleUpdateModalVisible?: (flag?: boolean, record?: TableListItem) => void;
 }
 const CreateForm: React.FC<CreateFormProps> = props => {
@@ -34,22 +34,22 @@ const CreateForm: React.FC<CreateFormProps> = props => {
     visitor: '',
     published: '',
     readtime: '',
-    readed: false,
+    readed: undefined,
   });
 
   useEffect(() => {
     employee().then(res => {
-      if (res.code == "0") {
+      if (res && res.code == "0") {
         setemployees(res.data && res.data.result)
       }
     })
     visitor().then(res => {
-      if (res.code == "0") {
+      if (res && res.code == "0") {
         setVisitors(res.data && res.data.result)
       }
     })
     type().then(res => {
-      if (res.code == "0") {
+      if (res && res.code == "0") {
         setTypes(res && res.data)
       }
     })
@@ -61,8 +61,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
         code: string;
         data: TableListItem
       }) => {
-        console.log(res)
-        if (res.code == "0") {
+        if (res && res.code == "0") {
           setDetailInfo(res.data)
         }
       })
@@ -71,14 +70,15 @@ const CreateForm: React.FC<CreateFormProps> = props => {
 
   const okHandle = () => {
     form.validateFields((err, fieldsValue) => {
-      console.log(fieldsValue)
       if (err) return;
-
       form.resetFields();
       if (hasVal) { //修改的
-        fieldsValue.id = detailInfo.id
-        console.log('修改')
-        handleUpdate && handleUpdate(fieldsValue)
+        let fields = {
+          id: detailInfo.id,
+          readed: fieldsValue.readed,
+          readtime: moment(fieldsValue.readtime).format('YYYY-MM-DD HH:mm:ss'),
+        }
+        handleUpdate && handleUpdate(fields)
         return
       }
       handleAdd && handleAdd(fieldsValue);
@@ -125,13 +125,13 @@ const CreateForm: React.FC<CreateFormProps> = props => {
         {form.getFieldDecorator('title', {
           rules: [{ required: true, message: '请输入' }],
           initialValue: detailInfo && detailInfo.title
-        })(<Input placeholder="请输入" />)}
+        })(<Input disabled={detailInfo.title ? true : false} placeholder="请输入" />)}
       </FormItem>
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="内容">
         {form.getFieldDecorator('content', {
           rules: [{ required: true, message: '请输入' }],
           initialValue: detailInfo && detailInfo.content
-        })(<TextArea autosize={
+        })(<TextArea disabled={detailInfo.title ? true : false} autosize={
           { minRows: 2, maxRows: 6 }
         } placeholder="请输入" />)}
       </FormItem>
@@ -141,6 +141,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
           initialValue: detailInfo && detailInfo.employee
         })(<Select
           // mode="multiple"
+          disabled={detailInfo.title ? true : false}
           style={{ width: '100%' }}
           placeholder="请选择"
           onChange={(e) => {
@@ -162,6 +163,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
           initialValue: detailInfo && detailInfo.visitor
         })(<Select
           // mode="multiple"
+          disabled={detailInfo.title ? true : false}
           style={{ width: '100%' }}
           placeholder="请选择"
           onChange={(e) => {
@@ -179,18 +181,18 @@ const CreateForm: React.FC<CreateFormProps> = props => {
       </FormItem>
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="是否已读">
         {form.getFieldDecorator('readed', {
-          initialValue: detailInfo && detailInfo.readed
-        })(<Switch checkedChildren="已读" unCheckedChildren="未读" defaultChecked={false} />)}
+          initialValue: detailInfo.readed ? detailInfo.readed : false
+        })(<Switch checkedChildren="已读" unCheckedChildren="未读" defaultChecked={detailInfo.readed ? true : false} />)}
       </FormItem>
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="发送时间">
         {form.getFieldDecorator('published', {
-          initialValue: detailInfo && moment(detailInfo.published),
+          initialValue: detailInfo.published && moment(detailInfo.published),
           // rules: [{ type: 'object', required: true, message: '请选择' }]
-        })(<DatePicker showTime format="YYYY-MM-DD HH:mm:ss" />)}
+        })(<DatePicker disabled={detailInfo.title ? true : false} showTime format="YYYY-MM-DD HH:mm:ss" />)}
       </FormItem>
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="阅读时间">
         {form.getFieldDecorator('readtime', {
-          initialValue: detailInfo && moment(detailInfo.readtime),
+          initialValue: detailInfo.readtime && moment(detailInfo.readtime),
           // rules: [{ type: 'object', required: true, message: '请选择' }]
         })(<DatePicker showTime format="YYYY-MM-DD HH:mm:ss" />)}
       </FormItem>

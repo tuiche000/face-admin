@@ -72,6 +72,9 @@ const CreateForm: React.FC<CreateFormProps> = props => {
       form.resetFields();
       if (hasVal) { //修改的
         fieldsValue.id = detailInfo.id
+        fieldsValue.device = undefined
+        fieldsValue.employee = undefined
+        fieldsValue.visitor = undefined
         handleUpdate && handleUpdate(fieldsValue)
         return
       }
@@ -100,6 +103,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
           initialValue: detailInfo && detailInfo.device
         })(<Select
           // mode="multiple"
+          disabled={detailInfo.device ? true : false}
           style={{ width: '100%' }}
           placeholder="请选择"
           onChange={(e) => {
@@ -121,6 +125,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
           initialValue: detailInfo && detailInfo.employee
         })(<Select
           // mode="multiple"
+          disabled={detailInfo.device ? true : false}
           style={{ width: '100%' }}
           placeholder="请选择"
           onChange={(e) => {
@@ -142,6 +147,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
           initialValue: detailInfo && detailInfo.visitor
         })(<Select
           // mode="multiple"
+          disabled={detailInfo.device ? true : false}
           style={{ width: '100%' }}
           placeholder="请选择"
           onChange={(e) => {
@@ -159,13 +165,13 @@ const CreateForm: React.FC<CreateFormProps> = props => {
       </FormItem>
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="生效时间">
         {form.getFieldDecorator('visitTime', {
-          initialValue: detailInfo && detailInfo.visitTime,
+          initialValue: detailInfo.visitTime ? moment(detailInfo.visitTime) : null,
           rules: [{ type: 'object', required: true, message: '请选择' }]
         })(<DatePicker showTime format="YYYY-MM-DD HH:mm:ss" />)}
       </FormItem>
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="过期时间">
         {form.getFieldDecorator('expiredTime', {
-          initialValue: detailInfo && detailInfo.expiredTime,
+          initialValue: detailInfo.expiredTime ? moment(detailInfo.expiredTime) : null,
           rules: [{ type: 'object', required: true, message: '请选择' }]
         })(<DatePicker showTime format="YYYY-MM-DD HH:mm:ss" />)}
       </FormItem>

@@ -29,7 +29,10 @@ const codeMessage = {
  */
 const errorHandler = (error: { response: Response }): Response => {
   const { response } = error;
+
   if (response && response.status) {
+
+
     if (response.status == 401 && window.location.pathname != '/user/login') {
       Modal.error({
         title: '请求错误',
@@ -41,17 +44,32 @@ const errorHandler = (error: { response: Response }): Response => {
           })}`)
         }
       });
-      return response
     }
 
+    if (response.status != 404) {
+      response.json().then(res => {
+        if (res.code != 0) {
+          notification.error({
+            message: `请求错误 ${status}: ${response.url}`,
+            description: res.message
+          })
+        }
+      })
+    }
 
-    const errorText = codeMessage[response.status] || response.statusText;
-    const { status, url } = response;
+    if (response.status == 404) {
+      const errorText = codeMessage[response.status] || response.statusText;
+      const { status, url } = response;
+      notification.error({
+        message: `请求错误 ${status}: ${url}`,
+        description: errorText,
+      });
+    }
 
-    notification.error({
-      message: `请求错误 ${status}: ${url}`,
-      description: errorText,
-    });
+    // notification.error({
+    //   message: `请求错误 ${status}: ${url}`,
+    //   description: errorText,
+    // });
   }
   return response;
 };

@@ -86,15 +86,15 @@ class TableList extends Component<TableListProps, TableListState> {
   columns: StandardTableColumnProps[] = [
     {
       title: '设备',
-      dataIndex: 'device'
+      dataIndex: 'deviceName'
     },
     {
       title: '员工',
-      dataIndex: 'employee',
+      dataIndex: 'employeeName',
     },
     {
       title: '访客',
-      dataIndex: 'visitor',
+      dataIndex: 'visitorName',
     },
     {
       title: '生效时间',

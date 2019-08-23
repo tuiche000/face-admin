@@ -6,6 +6,8 @@ export default {
   'menu.business.business-banner': '广告横幅',
   // deviceauth
   'menu.deviceauth': '设备授权',
+  // visitation
+  'menu.visitation': '出入记录',
   // user
   'menu.userrole': '人员角色管理',
   'menu.userrole.userrole-empolyee': '员工管理',

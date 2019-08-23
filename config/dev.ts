@@ -1,7 +1,7 @@
 module.exports = {
   NODE_ENV: '"development"',
-  CLIENTID: '"07z9hRpWbtVzNf3KQO2pO0"',
-  CLIENTSECRET: '"yFJbfGVTNomavvR7cwMyYddFStw2tKiU"',
+  CLIENTID: '07z9hRpWbtVzNf3KQO2pO0',
+  CLIENTSECRET: 'yFJbfGVTNomavvR7cwMyYddFStw2tKiU',
   API_HOST: 'http://visit.fothing.com',
   IMG_HOST: 'https://img1.fothing.com/'
 }

@@ -86,7 +86,7 @@ class TableList extends Component<TableListProps, TableListState> {
   columns: StandardTableColumnProps[] = [
     {
       title: '消息类型',
-      dataIndex: 'noticeType',
+      dataIndex: 'noticeTypeName',
     },
     {
       title: '标题',
@@ -99,11 +99,11 @@ class TableList extends Component<TableListProps, TableListState> {
     },
     {
       title: '员工',
-      dataIndex: 'employee',
+      dataIndex: 'employeeName',
     },
     {
       title: '访客',
-      dataIndex: 'visitor',
+      dataIndex: 'visitorName',
     },
     {
       title: '发送时间',
@@ -299,7 +299,7 @@ class TableList extends Component<TableListProps, TableListState> {
     this.handleModalVisible();
   };
 
-  handleUpdate = (fields: TableListItem) => {
+  handleUpdate = (fields: Partial<TableListItem>) => {
     const { dispatch } = this.props;
     dispatch({
       type: 'notice/update',

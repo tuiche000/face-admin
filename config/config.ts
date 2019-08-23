@@ -6,10 +6,10 @@ import webpackPlugin from './plugin.config';
 const { pwa, primaryColor } = defaultSettings; // preview.pro.ant.design only do not use in your production ;
 // preview.pro.ant.design 专用环境变量，请不要在你的项目中使用它。
 
-let config = {};
+let config = {}
 
 if (process.env.NODE_ENV == 'development') {
-  config = require('./dev.env');
+  config = require('./dev');
 } else if (process.env.NODE_ENV == 'production') {
   config = require('./prod.env');
 }
@@ -39,11 +39,11 @@ const plugins: IPlugin[] = [
       },
       pwa: pwa
         ? {
-            workboxPluginMode: 'InjectManifest',
-            workboxOptions: {
-              importWorkboxFrom: 'local',
-            },
-          }
+          workboxPluginMode: 'InjectManifest',
+          workboxOptions: {
+            importWorkboxFrom: 'local',
+          },
+        }
         : false, // default close dll, because issue https://github.com/ant-design/ant-design-pro/issues/4665
       // dll features https://webpack.js.org/plugins/dll-plugin/
       // dll: {
@@ -84,8 +84,8 @@ export default {
     defaultGitUrl: 'https://github.com/ant-design/pro-blocks',
   },
   hash: true,
-  base: '/rlsb/',
-  publicPath: '/rlsb/',
+  // base: '/rlsb/',
+  // publicPath: '/rlsb/',
   targets: {
     ie: 11,
   },
@@ -130,6 +130,12 @@ export default {
           path: '/deviceauth',
           icon: 'setting',
           component: './deviceauth',
+        },
+        {
+          name: 'visitation',
+          path: '/visitation',
+          icon: 'setting',
+          component: './visitation',
         },
         {
           name: 'notice',
@@ -250,6 +256,13 @@ export default {
   //     changeOrigin: true,
   //     pathRewrite: {
   //       '^/api': '/api',
+  //     },
+  //   },
+  //   '/oauth': {
+  //     target: 'http://visit.fothing.com',
+  //     changeOrigin: true,
+  //     pathRewrite: {
+  //       '^/oauth': '/oauth',
   //     },
   //   },
   // },

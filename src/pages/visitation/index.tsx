@@ -38,7 +38,7 @@ const getValue = (obj: { [x: string]: string[] }) =>
 interface TableListProps extends FormComponentProps {
   dispatch: Dispatch<any>;
   loading: boolean;
-  businessUserrole: StateType;
+  Visitation: StateType;
 }
 
 interface TableListState {
@@ -56,18 +56,18 @@ interface TableListState {
 /* eslint react/no-multi-comp:0 */
 @connect(
   ({
-    businessUserrole,
+    Visitation,
     loading,
   }: {
-    businessUserrole: StateType;
+    Visitation: StateType;
     loading: {
       models: {
         [key: string]: boolean;
       };
     };
   }) => ({
-    businessUserrole,
-    loading: loading.models.businessUserrole,
+    Visitation,
+    loading: loading.models.Visitation,
   }),
 )
 class TableList extends Component<TableListProps, TableListState> {
@@ -85,36 +85,24 @@ class TableList extends Component<TableListProps, TableListState> {
 
   columns: StandardTableColumnProps[] = [
     {
-      title: '名字',
-      dataIndex: 'name',
-      // render: (text, record) => {
-      //   return (
-      //     <a href="javascript:void(0);" onClick={() => this.handleDrawerVisible(true, record)}>{text}</a>
-      //   )
-      // }
+      title: '设备',
+      dataIndex: 'deviceName',
     },
     {
-      title: '电话',
-      dataIndex: 'phone',
+      title: '员工',
+      dataIndex: 'employeeName',
     },
     {
-      title: '员工编号',
-      dataIndex: 'empcode'
+      title: '访客',
+      dataIndex: 'visitorName',
     },
     {
-      title: '性别',
-      dataIndex: 'gender',
-      render: (text, record) => {
-        return (<span>
-          { 
-            text == 'MALE' ? '男' :  '女'
-          }
-        </span>)
-      }
+      title: '时间点',
+      dataIndex: 'datetime',
     },
     {
-      title: '部门',
-      dataIndex: 'department.name',
+      title: '出入类型',
+      dataIndex: 'visitType',
     },
     {
       title: '操作',
@@ -144,7 +132,7 @@ class TableList extends Component<TableListProps, TableListState> {
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'businessUserrole/fetch',
+      type: 'Visitation/fetch',
     });
   }
 
@@ -163,19 +151,17 @@ class TableList extends Component<TableListProps, TableListState> {
     }, {});
 
     const params: Partial<TableListParams> = {
-      pageNo: pagination.current,
-      pageSize: pagination.pageSize,
       ...formValues,
       ...filters,
     };
-    if (sorter.field) {
-      params.sorter = `${sorter.field}_${sorter.order}`;
-    }
+    // if (sorter.field) {
+    //   params.sorter = `${sorter.field}_${sorter.order}`;
+    // }
     this.setState({
       pageNo: pagination.current
     })
     dispatch({
-      type: 'businessUserrole/fetch',
+      type: 'Visitation/fetch',
       payload: params,
     });
   };
@@ -187,7 +173,7 @@ class TableList extends Component<TableListProps, TableListState> {
       formValues: {},
     });
     dispatch({
-      type: 'businessUserrole/fetch',
+      type: 'Visitation/fetch',
       payload: {},
     });
   };
@@ -207,12 +193,12 @@ class TableList extends Component<TableListProps, TableListState> {
     switch (e.key) {
       case 'remove':
         dispatch({
-          type: 'businessUserrole/remove',
+          type: 'Visitation/remove',
           payload: e.record ? e.record.id : selectedRows.map(row => row.id),
           callback: () => {
             message.success('删除成功');
             dispatch({
-              type: 'businessUserrole/fetch',
+              type: 'Visitation/fetch',
               payload: {
                 pageNo: this.state.pageNo
               }
@@ -251,7 +237,7 @@ class TableList extends Component<TableListProps, TableListState> {
       });
 
       dispatch({
-        type: 'businessUserrole/fetch',
+        type: 'Visitation/fetch',
         payload: fieldsValue,
       });
     });
@@ -283,12 +269,12 @@ class TableList extends Component<TableListProps, TableListState> {
   handleAdd = (fields: TableListItem) => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'businessUserrole/add',
+      type: 'Visitation/add',
       payload: fields,
       callback: () => {
         message.success('添加成功');
         dispatch({
-          type: 'businessUserrole/fetch',
+          type: 'Visitation/fetch',
           payload: {
             pageNo: this.state.pageNo
           }
@@ -302,12 +288,12 @@ class TableList extends Component<TableListProps, TableListState> {
   handleUpdate = (fields: TableListItem) => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'businessUserrole/update',
+      type: 'Visitation/update',
       payload: fields,
       callback: () => {
         message.success('修改成功');
         dispatch({
-          type: 'businessUserrole/fetch',
+          type: 'Visitation/fetch',
           payload: {
             pageNo: this.state.pageNo
           },
@@ -345,8 +331,9 @@ class TableList extends Component<TableListProps, TableListState> {
 
   render() {
     const {
-      businessUserrole: { data },
+      Visitation: { data },
       loading,
+
     } = this.props;
 
     const { selectedRows, modalVisible, updateModalVisible, stepFormValues, type } = this.state;
@@ -396,13 +383,18 @@ class TableList extends Component<TableListProps, TableListState> {
             />
           </div>
         </Card>
-        <CreateForm {...parentMethods} hasVal={false} modalVisible={modalVisible} />
+        {
+          data.list ? (
+            <CreateForm {...parentMethods} hasVal={false} departments={data.list} modalVisible={modalVisible} />
+          ) : null
+        }
         {
           type == 'update' ? (
             <CreateForm
               {...updateMethods}
               hasVal={true}
               modalVisible={updateModalVisible}
+              departments={data.list}
               values={stepFormValues} />
           ) : null
         }
